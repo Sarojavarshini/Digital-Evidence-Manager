@@ -1,0 +1,20 @@
+# Node
+node_modules/
+dist/
+
+# Java / Maven
+target/
+
+# Uploaded evidence
+uploads/
+
+# Environment / secrets
+.env
+*.env
+
+# IDE
+.idea/
+.vscode/
+
+# Windows
+Thumbs.db
