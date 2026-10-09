@@ -1,3 +1,4 @@
+```java
 package com.forensics.dem.util;
 
 import javax.crypto.Cipher;
@@ -8,40 +9,73 @@ import java.util.Base64;
 public class AESUtil {
 
     private static final String ALGORITHM = "AES";
-    // 16-byte Secret key for AES-128 or 32-byte for AES-256
-    private static final String DEFAULT_KEY = "DEMVaultAES256Key"; 
+    private static final String DEFAULT_KEY = "DEMVaultAES256Key";
+
+    private static byte[] getKeyBytes() {
+        String envKey = System.getenv("APP_AES_SECRET_KEY");
+
+        if (envKey == null || envKey.isBlank()) {
+            return padKey(DEFAULT_KEY);
+        }
+
+        byte[] keyBytes = Base64.getDecoder().decode(envKey);
+
+        if (keyBytes.length != 16) {
+            throw new IllegalArgumentException(
+                "AES key must decode to exactly 16 bytes"
+            );
+        }
+
+        return keyBytes;
+    }
 
     public static String encrypt(String valueToEnc) {
         try {
-            byte[] keyBytes = padKey(DEFAULT_KEY);
+            byte[] keyBytes = getKeyBytes();
             SecretKeySpec key = new SecretKeySpec(keyBytes, ALGORITHM);
-            Cipher c = Cipher.getInstance(ALGORITHM);
-            c.init(Cipher.ENCRYPT_MODE, key);
-            byte[] encValue = c.doFinal(valueToEnc.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(encValue);
+
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+
+            byte[] encryptedBytes = cipher.doFinal(
+                valueToEnc.getBytes(StandardCharsets.UTF_8)
+            );
+
+            return Base64.getEncoder().encodeToString(encryptedBytes);
+
         } catch (Exception e) {
-            return valueToEnc; // Fallback if encryption fails
+            throw new IllegalStateException("Encryption failed", e);
         }
     }
 
     public static String decrypt(String encryptedValue) {
         try {
-            byte[] keyBytes = padKey(DEFAULT_KEY);
+            byte[] keyBytes = getKeyBytes();
             SecretKeySpec key = new SecretKeySpec(keyBytes, ALGORITHM);
-            Cipher c = Cipher.getInstance(ALGORITHM);
-            c.init(Cipher.DECRYPT_MODE, key);
-            byte[] decordedValue = Base64.getDecoder().decode(encryptedValue);
-            byte[] decValue = c.doFinal(decordedValue);
-            return new String(decValue, StandardCharsets.UTF_8);
+
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.DECRYPT_MODE, key);
+
+            byte[] decodedBytes = Base64.getDecoder().decode(encryptedValue);
+            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+
+            return new String(decryptedBytes, StandardCharsets.UTF_8);
+
         } catch (Exception e) {
-            return encryptedValue; // Fallback if decryption fails
+            throw new IllegalStateException("Decryption failed", e);
         }
     }
 
     private static byte[] padKey(String keyStr) {
         byte[] keyBytes = new byte[16];
         byte[] strBytes = keyStr.getBytes(StandardCharsets.UTF_8);
-        System.arraycopy(strBytes, 0, keyBytes, 0, Math.min(strBytes.length, keyBytes.length));
+
+        System.arraycopy(
+            strBytes, 0, keyBytes, 0,
+            Math.min(strBytes.length, keyBytes.length)
+        );
+
         return keyBytes;
     }
 }
+```

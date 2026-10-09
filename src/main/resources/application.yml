@@ -6,10 +6,9 @@ spring:
     name: digital-evidence-manager
 
   datasource:
-    # Default MySQL connection
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/digital_evidence_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -25,11 +24,10 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
-# Cryptographic & Security Configurations
 app:
   security:
-    jwt-secret: DigitalEvidenceManagerSecretKeyForensicsProject2026SecureKeyWithSHA256
-    jwt-expiration-ms: 86400000 # 24 Hours
-    aes-secret-key: DEMVaultAES256KeySecretForensics
+    jwt-secret: ${APP_JWT_SECRET}
+    jwt-expiration-ms: 86400000
+    aes-secret-key: ${APP_AES_SECRET_KEY}
   upload:
     directory: ./uploads
