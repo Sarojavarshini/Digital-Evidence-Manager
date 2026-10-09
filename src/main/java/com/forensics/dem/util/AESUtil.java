@@ -1,4 +1,3 @@
-
 package com.forensics.dem.util;
 
 import javax.crypto.Cipher;
@@ -74,8 +73,6 @@ public class AESUtil {
             strBytes, 0, keyBytes, 0,
             Math.min(strBytes.length, keyBytes.length)
         );
-
         return keyBytes;
     }
 }
-
