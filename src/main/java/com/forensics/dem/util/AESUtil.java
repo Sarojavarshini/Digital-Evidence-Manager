@@ -1,4 +1,4 @@
-```java
+
 package com.forensics.dem.util;
 
 import javax.crypto.Cipher;
@@ -78,4 +78,4 @@ public class AESUtil {
         return keyBytes;
     }
 }
-```
+
